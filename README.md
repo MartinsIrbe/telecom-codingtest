@@ -15,7 +15,7 @@
 A basic Battleships game where the player has 20 moves to destroy ships on the field.
 
 #### Ship sizes
-Battleship = 5 squares
+Battleship = 5 squares  
 Destroyer = 4 squares
 
 #### Launching the game & running tests
