@@ -1,11 +1,9 @@
 package battleships.logic;
 
-import battleships.logic.ship.Battleship;
-import battleships.logic.ship.Destroyer;
-import battleships.logic.ship.Ship;
-import com.google.common.collect.Maps;
+import battleships.logic.ships.Battleship;
+import battleships.logic.ships.Destroyer;
+import battleships.logic.ships.Ship;
 
-import java.util.Map;
 import java.util.Random;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -21,31 +19,34 @@ public class Field {
     private static final int DIRECTION_DOWN = 2;
     private static final int DIRECTION_UP = 3;
 
-    private Map<String, Integer> ships;
     private Random random;
     private Ship[][] field;
 
+    private boolean[][] moves;
+
     private int totalShips = 0;
 
-    public Field(Random random, int battleshipsCount, int destroyersCount) {
+    public Field(Random random) {
         this.random = checkNotNull(random);
-
         this.field = new Ship[FIELD_SIZE][FIELD_SIZE];
-        this.ships = Maps.newHashMap();
-        ships.put(BATTLESHIP_ID, battleshipsCount);
-        ships.put(DESTROYER_ID, destroyersCount);
+        this.moves = new boolean[FIELD_SIZE][FIELD_SIZE];
     }
 
-    public Ship[][] generateNewField() {
-        for (Map.Entry<String, Integer> ship : ships.entrySet()) {
-            if (ship.getKey().equals(BATTLESHIP_ID)) {
-                placeShip(new Battleship());
-                totalShips++;
-            } else if (ship.getKey().equals(DESTROYER_ID)) {
-                placeShip(new Destroyer());
-                totalShips++;
-            }
+    public Ship[][] generateNewField(int battleshipsCount, int destroyersCount) {
+        int battleshipsPlaces = 0;
+        while (battleshipsPlaces < battleshipsCount) {
+            placeShip(new Battleship());
+            totalShips++;
+            battleshipsPlaces++;
         }
+
+        int destroyersPlaced = 0;
+        while (destroyersPlaced < destroyersCount) {
+            placeShip(new Destroyer());
+            totalShips++;
+            destroyersPlaced++;
+        }
+
         return field;
     }
 
@@ -135,22 +136,35 @@ public class Field {
     public boolean attack(int[] coordinates) {
         int rowIndex = coordinates[0];
         int columnIndex = coordinates[1];
+
         boolean attackSuccessful = false;
         Ship ship = field[rowIndex][columnIndex];
         if (ship != null && ship.validCoordinates(rowIndex, columnIndex)) {
             ship.attack(rowIndex, columnIndex);
-            totalShips--;
-            return true;
+            attackSuccessful = true;
         }
 
+        moves[rowIndex][columnIndex] = true;
         return attackSuccessful;
+    }
+
+    public boolean isMoveDoneOnCoordinates(int[] coordinates) {
+        int rowIndex = coordinates[0];
+        int columnIndex = coordinates[1];
+        return moves[rowIndex][columnIndex];
     }
 
     public boolean checkIfShipSunk(int[] coordinates) {
         int rowIndex = coordinates[0];
         int columnIndex = coordinates[1];
 
-        return field[rowIndex][columnIndex].isSunk();
+        if (field[rowIndex][columnIndex].isSunk()) {
+            System.out.printf("You sunk my %s!\n", field[rowIndex][columnIndex]);
+            totalShips--;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -170,7 +184,26 @@ public class Field {
     }
 
     public void printBattlefield() {
-        // TODO : Used to print the battlefield in the console.
+        System.out.println("    A   B   C   D   E   F   G   H   I   J");
+        for (int rowIndex = 0; rowIndex < FIELD_SIZE; rowIndex++) {
+            System.out.printf("%d\t", rowIndex + 1);
+            for (int columnIndex = 0; columnIndex < FIELD_SIZE; columnIndex++) {
+                if (field[rowIndex][columnIndex] != null
+                        && !field[rowIndex][columnIndex].validCoordinates(rowIndex, columnIndex)) {
+                    System.out.print("X\t");
+                } else if (moves[rowIndex][columnIndex]) {
+                    System.out.print(" \t");
+                } else {
+                    System.out.print("-\t");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    public void reset(int battleshipsCount, int destroyersCount) {
+        generateNewField(battleshipsCount, destroyersCount);
+        moves = new boolean[FIELD_SIZE][FIELD_SIZE];
     }
 
     public boolean battleIsOver() {
@@ -179,5 +212,9 @@ public class Field {
 
     public Ship[][] getField() {
         return field;
+    }
+
+    public boolean[][] getMoves() {
+        return moves;
     }
 }

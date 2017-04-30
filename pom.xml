@@ -13,6 +13,7 @@
         <guava.version>21.0</guava.version>
         <mockito.version>2.7.22</mockito.version>
         <junit.version>4.12</junit.version>
+        <apache-commons.version>3.5</apache-commons.version>
     </properties>
 
     <build>
@@ -44,6 +45,11 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${apache-commons.version}</version>
         </dependency>
     </dependencies>
 </project>
