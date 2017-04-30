@@ -8,6 +8,9 @@ import java.util.Random;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * This class is used to store all logic for the game field.
+ */
 public class Field {
 
     private static final String BATTLESHIP_ID = "Battleship";
@@ -26,12 +29,22 @@ public class Field {
 
     private int totalShips = 0;
 
+    /**
+     * Used to create a new instance of the game field.
+     * @param random Used to get ship direction and random row/column indexes.
+     */
     public Field(Random random) {
         this.random = checkNotNull(random);
         this.field = new Ship[FIELD_SIZE][FIELD_SIZE];
         this.moves = new boolean[FIELD_SIZE][FIELD_SIZE];
     }
 
+    /**
+     * Used to generate a 2-dimensional field that contains ships.
+     * @param battleshipsCount Number of battleships that needs to be placed on the field.
+     * @param destroyersCount Number of destroyers that needs to be placed on the field.
+     * @return Generated field that contains placed ships.
+     */
     public Ship[][] generateNewField(int battleshipsCount, int destroyersCount) {
         int battleshipsPlaces = 0;
         while (battleshipsPlaces < battleshipsCount) {
@@ -50,6 +63,10 @@ public class Field {
         return field;
     }
 
+    /**
+     * Used to place the given ship on the field.
+     * @param ship The ship that needs to be added to the field.
+     */
     public void placeShip(Ship ship) {
         boolean shipNotPlaced = true;
         while (shipNotPlaced) {
@@ -62,6 +79,15 @@ public class Field {
         }
     }
 
+    /**
+     * This method is used to attempt to place a ship on
+     * the field in given direction from given coordinates.
+     * @param ship The ship that needs to be added to the field.
+     * @param rowStart The row start index.
+     * @param columnStart The column start index.
+     * @param direction The direction of where the ship should be placed.
+     * @return
+     */
     private boolean attemptToPlaceShip(
             Ship ship,
             int rowStart,
@@ -109,10 +135,24 @@ public class Field {
         return validPlacement;
     }
 
+    /**
+     * Check if the given index is within the field boundaries.
+     * @param index Index which needs to be checked.
+     * @return true if the field is within the field boundaries, else return false.
+     */
     private boolean isWithinBounds(int index) {
         return index < FIELD_SIZE && index >= 0;
     }
 
+    /**
+     * Used to check if it's possible to place the ship
+     * based on the given coordinates.
+     * @param rowStart The row start index.
+     * @param rowEnd The row end index.
+     * @param columnStart The column start index.
+     * @param columnEnd The column end index.
+     * @return true if possible to place the ship based on the given coordinates, else return false.
+     */
     public boolean isValidPlacement(int rowStart, int rowEnd, int columnStart, int columnEnd) {
         if (columnStart == columnEnd) {
             for (int rowIndex = rowEnd; rowIndex <= rowStart; rowIndex++) {
@@ -133,6 +173,11 @@ public class Field {
         return true;
     }
 
+    /**
+     * Used to perform an attack on given coordinates.
+     * @param coordinates The coordinates which needs to be attacked.
+     * @return true if the attack has been successful, else return false.
+     */
     public boolean attack(int[] coordinates) {
         int rowIndex = coordinates[0];
         int columnIndex = coordinates[1];
@@ -148,12 +193,25 @@ public class Field {
         return attackSuccessful;
     }
 
+    /**
+     * Used to check if the user has performed a move to
+     * given coordinates to make sure that it's not possible
+     * to attack to the same coordinates.
+     * @param coordinates Coordinates that needs to be checked.
+     * @return true if the user has already performed a move to the given coordinates,
+     *          else return false.
+     */
     public boolean isMoveDoneOnCoordinates(int[] coordinates) {
         int rowIndex = coordinates[0];
         int columnIndex = coordinates[1];
         return moves[rowIndex][columnIndex];
     }
 
+    /**
+     * Used to verify if the ship has sunk.
+     * @param coordinates The ship coordinates that needs to be checked.
+     * @return true if the ship has sunken.
+     */
     public boolean checkIfShipSunk(int[] coordinates) {
         int rowIndex = coordinates[0];
         int columnIndex = coordinates[1];
@@ -183,6 +241,10 @@ public class Field {
         return extractedCoordinates;
     }
 
+    /**
+     * Prints the Battleships field on the console by creating
+     * a representation of the 2-dimensional array.
+     */
     public void printBattlefield() {
         System.out.println("    A   B   C   D   E   F   G   H   I   J");
         for (int rowIndex = 0; rowIndex < FIELD_SIZE; rowIndex++) {
@@ -201,19 +263,37 @@ public class Field {
         }
     }
 
+    /**
+     * Used to reset the current game state.
+     * @param battleshipsCount The number of battleships that needs to be placed on the new field.
+     * @param destroyersCount The number of destroyers that needs to be placed on the new field.
+     */
     public void reset(int battleshipsCount, int destroyersCount) {
         generateNewField(battleshipsCount, destroyersCount);
         moves = new boolean[FIELD_SIZE][FIELD_SIZE];
     }
 
+    /**
+     * Used to check how many ships are left on the field.
+     * If no more ships left, battle is over.
+     * @return true if no more ships left, otherwise returns false.
+     */
     public boolean battleIsOver() {
         return totalShips == 0;
     }
 
+    /**
+     * Used to retrieve the game field.
+     * @return The current game field.
+     */
     public Ship[][] getField() {
         return field;
     }
 
+    /**
+     * Used to retrieve user performed moves.
+     * @return a 2-dimensional array of all moves that the user has performed.
+     */
     public boolean[][] getMoves() {
         return moves;
     }
