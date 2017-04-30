@@ -1,8 +1,10 @@
 package battleships;
 
 import battleships.logic.Field;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Random;
+import java.util.Scanner;
 
 public class Application {
 
@@ -19,22 +21,45 @@ public class Application {
         Field field = new Field(random , BATTLESHIPS_COUNT, DESTROYERS_COUNT);
         field.generateNewField();
 
+        Scanner scanner = new Scanner(System.in);
         while (!field.battleIsOver()) {
-            // TODO : Main application logic for retrieving user input and performing attack.
+            System.out.print("Enter coordinates to attack: ");
 
-//            String coordinates = "";
-            int[] coordinates = field.getCoordinates("A1");
-            boolean attackStatus = field.attack(coordinates);
-            // TODO : Check if ship sunk if attack success.
-            if (field.attack(coordinates)) {
+            String userInput = scanner.nextLine();
+            if (userInput != null && isValidUserInput(userInput)) {
+                int[] coordinates = field.getCoordinates(userInput);
+                if (field.attack(coordinates)) {
+                    System.out.printf("Attack on coordinates %s has been successful!\n", userInput);
+                }
 
+                field.printBattlefield();
+            } else {
+                System.out.printf("Invalid coordinates %s\n", userInput);
             }
-            if (attackStatus) {
-                System.out.printf("Attack on coordinates %s has been successful!", coordinates);
-            }
-
-            field.printBattlefield();
         }
     }
 
+    public boolean isValidUserInput(String coordinates) {
+        return isValidFormat(coordinates)
+                && isValidColumn(coordinates)
+                && isValidRow(coordinates);
+    }
+
+    private boolean isValidFormat(String coordinates) {
+        return !coordinates.isEmpty()
+                && coordinates.length() <= 3
+                && coordinates.length() > 1
+                && StringUtils.isAlphanumeric(coordinates);
+    }
+
+    private boolean isValidRow(String coordinates) {
+        return StringUtils.isNumeric(StringUtils.substringAfterLast(coordinates, coordinates.substring(0, 1)))
+                && Integer.parseInt(StringUtils.substringAfterLast(coordinates, coordinates.substring(0, 1))) <= 10
+                && Integer.parseInt(StringUtils.substringAfterLast(coordinates, coordinates.substring(0, 1))) > 0;
+    }
+
+    private boolean isValidColumn(String coordinates) {
+        return StringUtils.isAlpha(coordinates.substring(0, 1))
+                && coordinates.substring(0, 1).toLowerCase().charAt(0) - 'a' < 10;
+    }
 }

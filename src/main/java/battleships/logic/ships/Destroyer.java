@@ -1,4 +1,4 @@
-package battleships.logic.ship;
+package battleships.logic.ships;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

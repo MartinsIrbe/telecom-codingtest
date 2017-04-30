@@ -1,8 +1,8 @@
 package battleships.logic;
 
-import battleships.logic.ship.Battleship;
-import battleships.logic.ship.Destroyer;
-import battleships.logic.ship.Ship;
+import battleships.logic.ships.Battleship;
+import battleships.logic.ships.Destroyer;
+import battleships.logic.ships.Ship;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
