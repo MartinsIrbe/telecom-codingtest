@@ -1,15 +1,15 @@
-package battleships;
+package battleships.logic;
 
-import battleships.logic.Field;
-import battleships.logic.ship.Battleship;
-import battleships.logic.ship.Destroyer;
-import battleships.logic.ship.Ship;
+import battleships.logic.ships.Battleship;
+import battleships.logic.ships.Destroyer;
+import battleships.logic.ships.Ship;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Map;
 import java.util.Random;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -375,5 +375,111 @@ public class FieldTest {
 
         assertThat(coordinates[0], is(0));
         assertThat(coordinates[1], is(0));
+    }
+
+    @Test
+    public void successfullyAddedMovesWhenAttemptingToAttack() {
+        successfullyAddedBattleshipToFieldInRowToLeft();
+
+        assertTrue(field.attack(new int[]{0, 0}));
+
+        assertTrue(field.getMoves()[0][0]);
+    }
+
+    @Test
+    public void whenNoMovePerformedMovesShouldHaveOnlyFalseValues() {
+        for (int rowIndex = 0; rowIndex < 10; rowIndex++) {
+            for (int columnIndex = 0; columnIndex < 10; columnIndex++) {
+                assertFalse(field.getMoves()[rowIndex][columnIndex]);
+            }
+        }
+    }
+
+    @Test
+    public void whenGeneratingNewFieldBattleshipIsAddedToField() {
+        Field tempField = new Field(new Random(), 1, 0);
+        Ship[][] ships = tempField.generateNewField();
+
+        boolean batleshipPresent = false;
+        for (int rowIndex = 0; rowIndex < 10; rowIndex++) {
+            for (int columnIndex = 0; columnIndex < 10; columnIndex++) {
+                if (ships[rowIndex][columnIndex] instanceof Battleship) {
+                    batleshipPresent = true;
+                    break;
+                }
+            }
+        }
+
+        assertTrue(batleshipPresent);
+    }
+
+    @Test
+    public void whenGeneratingNewFieldDestroyerIsAddedToField() {
+        Field tempField = new Field(new Random(), 0, 1);
+        Ship[][] ships = tempField.generateNewField();
+
+        boolean destroyerPresent = false;
+        for (int rowIndex = 0; rowIndex < 10; rowIndex++) {
+            for (int columnIndex = 0; columnIndex < 10; columnIndex++) {
+                if (ships[rowIndex][columnIndex] instanceof Destroyer) {
+                    destroyerPresent = true;
+                    break;
+                }
+            }
+        }
+
+        assertTrue(destroyerPresent);
+    }
+
+    @Test
+    public void maintainingStateOfUserMoves() {
+        successfullyAddedBattleshipToFieldInRowToLeft();
+        field.attack(new int[]{0, 0});
+        assertTrue(field.isMoveDoneOnCoordinates(new int[]{0, 0}));
+    }
+
+    @Test
+    public void checkIfShipSunkReturnsFalseWhenShipNotSunken() {
+        successfullyAddedBattleshipToFieldInRowToLeft();
+        field.attack(new int[]{0, 0});
+
+        assertFalse(field.checkIfShipSunk(new int[]{0, 0}));
+    }
+
+    @Test
+    public void checkIfShipSunkReturnsTrueWhenShipSunken() {
+        successfullyAddedBattleshipToFieldInRowToLeft();
+        field.attack(new int[]{0, 0});
+        field.attack(new int[]{1, 0});
+        field.attack(new int[]{2, 0});
+        field.attack(new int[]{3, 0});
+        field.attack(new int[]{4, 0});
+
+        assertTrue(field.checkIfShipSunk(new int[]{0, 0}));
+    }
+
+    @Test
+    public void failWhenPlacementIsNotValid() {
+        successfullyAddedBattleshipToFieldInRowToLeft();
+        assertFalse(field.isValidPlacement(0, 0, 0, 0));
+
+        successfullyAddedBattleshipToFieldInColumnUpwards();
+        assertFalse(field.isValidPlacement(0, 0, 0, 0));
+    }
+
+    @Test
+    public void passWhenPlacementIsValid() {
+        successfullyAddedBattleshipToFieldInRowToLeft();
+        assertTrue(field.isValidPlacement(0, 0, 1, 1));
+
+        successfullyAddedBattleshipToFieldInColumnUpwards();
+        assertTrue(field.isValidPlacement(1, 1, 1, 1));
+    }
+
+    @Test
+    public void failWhenEitherNotTheSameColumnOrRow() {
+        successfullyAddedBattleshipToFieldInColumnUpwards();
+
+        assertFalse(field.isValidPlacement(1, 2, 1, 2));
     }
 }

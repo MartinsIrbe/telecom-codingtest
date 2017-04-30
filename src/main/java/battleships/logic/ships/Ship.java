@@ -1,8 +1,6 @@
-package battleships.logic.ship;
+package battleships.logic.ships;
 
 public interface Ship {
-
-    String getName();
 
     boolean isSunk();
 
