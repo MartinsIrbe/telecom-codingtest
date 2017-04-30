@@ -36,7 +36,7 @@ public class FieldTest {
 
     @Before
     public void setUp() throws Exception {
-        this.field = new Field(random, BATTLESHIP_COUNT, DESTROYERS_COUNT);
+        this.field = new Field(random);
     }
 
     @Test
@@ -397,8 +397,8 @@ public class FieldTest {
 
     @Test
     public void whenGeneratingNewFieldBattleshipIsAddedToField() {
-        Field tempField = new Field(new Random(), 1, 0);
-        Ship[][] ships = tempField.generateNewField();
+        Field tempField = new Field(new Random());
+        Ship[][] ships = tempField.generateNewField(1, 0);
 
         boolean batleshipPresent = false;
         for (int rowIndex = 0; rowIndex < 10; rowIndex++) {
@@ -415,8 +415,8 @@ public class FieldTest {
 
     @Test
     public void whenGeneratingNewFieldDestroyerIsAddedToField() {
-        Field tempField = new Field(new Random(), 0, 1);
-        Ship[][] ships = tempField.generateNewField();
+        Field tempField = new Field(new Random());
+        Ship[][] ships = tempField.generateNewField(0, 1);
 
         boolean destroyerPresent = false;
         for (int rowIndex = 0; rowIndex < 10; rowIndex++) {

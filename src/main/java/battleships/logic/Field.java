@@ -3,9 +3,7 @@ package battleships.logic;
 import battleships.logic.ships.Battleship;
 import battleships.logic.ships.Destroyer;
 import battleships.logic.ships.Ship;
-import com.google.common.collect.Maps;
 
-import java.util.Map;
 import java.util.Random;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -21,7 +19,6 @@ public class Field {
     private static final int DIRECTION_DOWN = 2;
     private static final int DIRECTION_UP = 3;
 
-    private Map<String, Integer> ships;
     private Random random;
     private Ship[][] field;
 
@@ -29,31 +26,27 @@ public class Field {
 
     private int totalShips = 0;
 
-    public Field(Random random, int battleshipsCount, int destroyersCount) {
+    public Field(Random random) {
         this.random = checkNotNull(random);
-
         this.field = new Ship[FIELD_SIZE][FIELD_SIZE];
-        this.ships = Maps.newHashMap();
-        if (battleshipsCount > 0) {
-            ships.put(BATTLESHIP_ID, battleshipsCount);
-        }
-        if (destroyersCount > 0) {
-            ships.put(DESTROYER_ID, destroyersCount);
-        }
-
         this.moves = new boolean[FIELD_SIZE][FIELD_SIZE];
     }
 
-    public Ship[][] generateNewField() {
-        for (Map.Entry<String, Integer> ship : ships.entrySet()) {
-            if (ship.getKey().equals(BATTLESHIP_ID)) {
-                placeShip(new Battleship());
-                totalShips++;
-            } else if (ship.getKey().equals(DESTROYER_ID)) {
-                placeShip(new Destroyer());
-                totalShips++;
-            }
+    public Ship[][] generateNewField(int battleshipsCount, int destroyersCount) {
+        int battleshipsPlaces = 0;
+        while (battleshipsPlaces < battleshipsCount) {
+            placeShip(new Battleship());
+            totalShips++;
+            battleshipsPlaces++;
         }
+
+        int destroyersPlaced = 0;
+        while (destroyersPlaced < destroyersCount) {
+            placeShip(new Destroyer());
+            totalShips++;
+            destroyersPlaced++;
+        }
+
         return field;
     }
 
@@ -208,9 +201,8 @@ public class Field {
         }
     }
 
-    public void reset() {
-        generateNewField();
-        totalShips = ships.size();
+    public void reset(int battleshipsCount, int destroyersCount) {
+        generateNewField(battleshipsCount, destroyersCount);
         moves = new boolean[FIELD_SIZE][FIELD_SIZE];
     }
 

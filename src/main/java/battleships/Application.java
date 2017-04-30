@@ -9,7 +9,9 @@ import java.util.Scanner;
 public class Application {
 
     private static final int BATTLESHIPS_COUNT = 1;
-    private static final int DESTROYERS_COUNT = 0;
+    private static final int DESTROYERS_COUNT = 2;
+    private static final int TOTAL_MOVES = 20;
+
 
     public static void main(String[] args) {
         new Application().run();
@@ -18,12 +20,12 @@ public class Application {
     public void run() {
         Random random = new Random();
 
-        Field field = new Field(random , BATTLESHIPS_COUNT, DESTROYERS_COUNT);
-        field.generateNewField();
+        Field field = new Field(random);
+        field.generateNewField(BATTLESHIPS_COUNT, DESTROYERS_COUNT);
 
         field.printBattlefield();
 
-        int moves = 10000000;
+        int moves = TOTAL_MOVES;
         Scanner scanner = new Scanner(System.in);
         while (!field.battleIsOver() && moves != 0) {
             System.out.printf("You have %d moves left.\n", moves);
@@ -55,9 +57,9 @@ public class Application {
             }
 
             if (moves == 0 && restart(scanner)) {
-                field = new Field(random, BATTLESHIPS_COUNT, DESTROYERS_COUNT);
-                field.reset();
-                moves = 10;
+                field = new Field(random);
+                field.reset(BATTLESHIPS_COUNT, DESTROYERS_COUNT);
+                moves = TOTAL_MOVES;
                 System.out.println("\nStarting new game, good luck!");
                 field.printBattlefield();
             }
