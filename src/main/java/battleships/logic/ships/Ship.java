@@ -2,8 +2,6 @@ package battleships.logic.ships;
 
 public interface Ship {
 
-    String getName();
-
     boolean isSunk();
 
     int getLength();

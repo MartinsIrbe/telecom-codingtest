@@ -1,5 +1,6 @@
 package battleships.logic.ships;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -16,10 +17,6 @@ public class Battleship implements Ship {
         this.name = "Battleship";
         this.length = 5;
         this.coordinates = Maps.newHashMap();
-    }
-
-    public String getName() {
-        return name;
     }
 
     public boolean isSunk() {
@@ -47,5 +44,25 @@ public class Battleship implements Ship {
         coordinates.values().removeIf(coordinate ->
                 coordinate.get(0) == rowIndex && coordinate.get(1) == columnIndex
         );
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Battleship that = (Battleship) o;
+        return length == that.length &&
+                Objects.equal(name, that.name) &&
+                Objects.equal(coordinates, that.coordinates);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name, length, coordinates);
     }
 }
